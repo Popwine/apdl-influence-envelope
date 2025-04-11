@@ -1,18 +1,18 @@
-# Python 缓存
-__pycache__/
-*.py[cod]
-*.pyo
+# 构建产物
+build/
+dist/
 
 # 虚拟环境
 venv/
-env/
 
-# PyInstaller 打包
-build/
-dist/
-*.spec
+# 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 可执行文件
 *.exe
 *.pkg
 
-# PyCharm 项目配置
+# IDE配置
 .idea/
