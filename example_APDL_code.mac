@@ -1,0 +1,113 @@
+FINISH
+/CLEAR
+/PREP7
+
+ET,1.0,BEAM4
+MP,EX,1.0,2e5
+MP,PRXY,1.0,0.3
+
+R, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0
+
+*dim, x, array, 101
+x(1) = 0.0
+
+*do, i, 2, 101
+    x(i) = x(i-1) + 0.1
+*enddo
+
+*do, i, 1, 101
+    N, i, x(i), 0.0, 0.0
+*enddo
+
+REAL, 1
+TYPE, 1
+*do,i,1,100
+    E,i,i+1
+*enddo
+
+D,1,UX,0
+D,1,UY,0
+D,1,UZ,0
+D,1,ROTX,0
+D,1,ROTY,0
+
+D,101,UY,0
+D,101,UZ,0
+D,101,ROTX,0
+D,101,ROTY,0
+
+
+
+*CFOPEN, 'C:\Projects\APDLProjects\homework03\data', txt
+*dim, dispy, array, 101
+*DIM, moment, ARRAY, 101
+*DIM, shear, ARRAY, 101
+/OUTPUT, C:\Projects\APDLProjects\homework03\etable.txt, txt
+*do,i,1,101
+    
+
+    /SOLU
+    *if,i,GT,1,then
+        FDELE, i-1, FY
+    *endif
+    
+    NSEL, S, NODE, , i
+    F, ALL, FY, -1
+    NSEL,ALL
+    ! 8. 求解
+    FINISH
+    /SOLU
+    ANTYPE,STATIC
+    SOLVE
+    FINISH
+
+    !---------------------------------------------
+    ! 9. 后处理 - 输出所需结果
+    /POST1
+    SET,1      ! 载荷步 1
+
+    ! (1)(2) 弯矩、剪力图
+
+    /POST1              ! 进入通用后处理器
+    SET, LAST           ! 读取最后一个荷载步的结果
+
+
+
+    ETABLE, MB1, SMISC, 6    ! 端1原始弯矩（SMISC,6）
+    ETABLE, MB2, SMISC, 12   ! 端2原始弯矩（SMISC,12）
+    PLLS,MB1,MB2,-1,0  ! 绘制弯矩图
+
+    ETABLE,VF1,SMISC,2   ! 单元端1剪力
+    ETABLE,VF2,SMISC,8   ! 单元端2剪力
+
+    PLLS,VF1,VF2,-1,0  ! 绘制剪力图
+        ! 之后所有打印命令输出到 myetable.txt
+
+    PRETAB, MB1, MB1, VF1, VF2
+
+
+    *do, j, 1, 101
+        *IF, j, LE, 100, THEN
+            *GET, moment(j), ELEM, j, SMISC, 6
+            *GET, shear(j), ELEM, j, SMISC, 2
+        *ELSE
+            *GET, moment(j), ELEM, 100, SMISC, 12
+            *GET, shear(j), ELEM, 100, SMISC, 2
+        *endif
+    *enddo
+    
+    *do,j,1,101
+        *GET, disp, NODE, j, U, Y
+        dispy(j) = disp
+    *enddo
+
+    *VWRITE, i, dispy(1), moment(1), shear(1)
+    (F10.4, 2X, E16.8, 2X, E16.8, 2X, E16.8)
+
+
+
+*enddo
+
+*CFCLOS
+
+
