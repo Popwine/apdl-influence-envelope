@@ -1,0 +1,10 @@
+*.py linguist-language=Python
+
+# 忽略以下为 GitHub 语言统计无关内容
+.idea/* linguist-vendored
+venv/* linguist-vendored
+build/* linguist-vendored
+dist/* linguist-vendored
+__pycache__/* linguist-vendored
+*.exe linguist-vendored
+*.pkg linguist-vendored
